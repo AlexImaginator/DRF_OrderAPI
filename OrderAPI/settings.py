@@ -137,3 +137,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
+
+DJOSER = {
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': '/users/reset_password/{uid}/{token}',
+    'SERIALIZERS': {
+        'current_user': 'users.serializers.UserPatchSerializer',
+    },
+}
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025

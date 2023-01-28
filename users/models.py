@@ -51,7 +51,7 @@ class User(AbstractUser):
     """
     Стандартная модель пользователей
     """
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username', 'type']
     objects = UserManager()
     USERNAME_FIELD = 'email'
     email = models.EmailField(_('email address'), unique=True)
@@ -66,6 +66,7 @@ class User(AbstractUser):
         error_messages={
             'unique': _("A user with that username already exists."),
         },
+        blank=True,
     )
     is_active = models.BooleanField(
         _('active'),
