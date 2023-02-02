@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'users',
+    'shop_backend',
 ]
 
 MIDDLEWARE = [
@@ -141,7 +142,7 @@ REST_FRAMEWORK = {
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': '/users/reset_password/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': '/backend/reset_password/{uid}/{token}',
     'SERIALIZERS': {
         'current_user': 'users.serializers.UserPatchSerializer',
     },
