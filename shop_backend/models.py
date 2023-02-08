@@ -15,7 +15,7 @@ class Parameter(models.Model):
 
 
 class Shop(models.Model):
-    user = models.ForeignKey(User, verbose_name='Пользователь', blank=True, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name='shops')
     name = models.CharField(max_length=50, verbose_name='Название')
     url = models.URLField(verbose_name='Ссылка update', blank=True, null=True)
     state = models.BooleanField(verbose_name='Статус приема заказов', default=True)
@@ -24,6 +24,7 @@ class Shop(models.Model):
         verbose_name = 'Магазин'
         verbose_name_plural = 'Список магазинов'
         ordering = ('name',)
+        unique_together = ['user', 'name']
 
     def __str__(self):
         return f'{self.name} - {self.user}'
