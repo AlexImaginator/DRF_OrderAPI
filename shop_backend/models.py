@@ -28,3 +28,29 @@ class Shop(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.user}'
+
+
+class Category(models.Model):
+    shops = models.ManyToManyField(Shop, verbose_name='Магазины', related_name='categories')
+    name = models.CharField(max_length=80, verbose_name='Название')
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Список категорий'
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name='Категория')
+    name = models.CharField(max_length=80, verbose_name='Название')
+
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Список товаров'
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
