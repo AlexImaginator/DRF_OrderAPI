@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Shop, Category, Product
+from .models import Shop, Category, Product, ProductInShop
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -15,11 +15,22 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name']
-        read_only_fields = ['id',]
+        read_only_fields = ['id', ]
 
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.StringRelatedField()
+
     class Meta:
         model = Product
         fields = ['name', 'category']
+
+
+class ProductInShopSerializer(serializers.ModelSerializer):
+    shop = ShopSerializer(read_only=True)
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = ProductInShop
+        fields = ['id', 'shop', 'product', 'model', 'price', 'quantity']
+        read_only_fields = ('id', )

@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
-from .models import Shop, Category
+from .models import Shop, Category, ProductInShop, Product
 from .serializers import ShopSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsOwnerOrReadOnly
@@ -38,14 +38,28 @@ class ShopPricelistUpdate(APIView):
             return JsonResponse({'Status': False, 'Error': 'Log in is required'}, status=403)
         if request.user.type != 'shop':
             return JsonResponse({'Status': False, 'Error': 'Only for sellers'}, status=403)
-        shop = Shop.objects.filter(user=request.user, name=request.data['shop_to_update'])
-        shop = shop[0]
+        shop = Shop.objects.get(user=request.user, name=request.data['shop_to_update'])
         url = shop.url
         stream = get_data(url).content
         data = load_yaml(stream, Loader=Loader)
+        category_list = [category['name'] for category in data['Categories']]
+        categories_to_remove = Category.objects.filter(shops=shop.id).exclude(name__in=category_list)
+        if categories_to_remove:
+            for category in categories_to_remove:
+                category.shops.remove(shop.id)
+                category.save()
+        Category.objects.filter(shops__isnull=True).delete()
         for category in data['Categories']:
             category_object, _ = Category.objects.get_or_create(name=category['name'])
             category_object.shops.add(shop.id)
             category_object.save()
-        print(data)
+        ProductInShop.objects.filter(shop=shop).delete()
+        for item in data['Products']:
+            product_object, _ = Product.objects.get_or_create(name=item['name'],
+                                                              category=Category.objects.get(name=item['category']))
+            product_in_shop_object = ProductInShop.objects.create(product=product_object,
+                                                                     shop=shop,
+                                                                     model=item['model'],
+                                                                     price=item['price'],
+                                                                     quantity=item['quantity'])
         return JsonResponse({'Status': True, })

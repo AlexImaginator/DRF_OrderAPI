@@ -1,5 +1,7 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MinValueValidator
+from _decimal import Decimal
 
 
 class Parameter(models.Model):
@@ -54,3 +56,24 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductInShop(models.Model):
+    product = models.ForeignKey(Product,
+                                on_delete=models.CASCADE,
+                                related_name='products_in_shops',
+                                verbose_name='Товар')
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products_in_shops', verbose_name='Магазин')
+    model = models.CharField(max_length=80, blank=True, verbose_name='Модель')
+    price = models.DecimalField(max_digits=11,
+                                decimal_places=2,
+                                verbose_name='Цена',
+                                validators=[MinValueValidator(Decimal('0.01'))])
+    quantity = models.PositiveIntegerField(verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Товар магазина'
+        verbose_name_plural = 'Список товаров магазина'
+        constraints = [
+            models.UniqueConstraint(fields=['shop', 'product', 'model'], name='unique_product_in_shop'),
+        ]
