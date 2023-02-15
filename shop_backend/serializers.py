@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Shop, Category, Product, ProductInShop
+from .models import Shop, Category, Product, ProductInShop, ProductParameter
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -34,3 +34,11 @@ class ProductInShopSerializer(serializers.ModelSerializer):
         model = ProductInShop
         fields = ['id', 'shop', 'product', 'model', 'price', 'quantity']
         read_only_fields = ('id', )
+
+
+class ProductParameterSerializer(serializers.ModelSerializer):
+    parameter = serializers.StringRelatedField()
+
+    class Meta:
+        model = ProductParameter
+        fields = ['parameter', 'value']

@@ -62,13 +62,15 @@ class ProductInShop(models.Model):
     product = models.ForeignKey(Product,
                                 on_delete=models.CASCADE,
                                 related_name='products_in_shops',
-                                verbose_name='Товар')
+                                verbose_name='Товар'
+                                )
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products_in_shops', verbose_name='Магазин')
     model = models.CharField(max_length=80, blank=True, verbose_name='Модель')
     price = models.DecimalField(max_digits=11,
                                 decimal_places=2,
                                 verbose_name='Цена',
-                                validators=[MinValueValidator(Decimal('0.01'))])
+                                validators=[MinValueValidator(Decimal('0.01'))]
+                                )
     quantity = models.PositiveIntegerField(verbose_name='Количество')
 
     class Meta:
@@ -76,4 +78,25 @@ class ProductInShop(models.Model):
         verbose_name_plural = 'Список товаров магазина'
         constraints = [
             models.UniqueConstraint(fields=['shop', 'product', 'model'], name='unique_product_in_shop'),
+        ]
+
+
+class ProductParameter(models.Model):
+    product_in_shop = models.ForeignKey(ProductInShop,
+                                        on_delete=models.CASCADE,
+                                        related_name='product_parameters',
+                                        verbose_name='Товар магазина'
+                                        )
+    parameter = models.ForeignKey(Parameter,
+                                  on_delete=models.CASCADE,
+                                  related_name='product_parameters',
+                                  verbose_name='Параметр'
+                                  )
+    value = models.CharField(max_length=100, verbose_name='Значение')
+
+    class Meta:
+        verbose_name = 'Параметр товара'
+        verbose_name_plural = 'Список параметров товара'
+        constraints = [
+            models.UniqueConstraint(fields=['product_in_shop', 'parameter'], name='unique_product_parameter')
         ]

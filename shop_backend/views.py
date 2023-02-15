@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
-from .models import Shop, Category, ProductInShop, Product
+from .models import Shop, Category, ProductInShop, Product, Parameter, ProductParameter
 from .serializers import ShopSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsOwnerOrReadOnly
@@ -54,6 +54,7 @@ class ShopPricelistUpdate(APIView):
             category_object.shops.add(shop.id)
             category_object.save()
         ProductInShop.objects.filter(shop=shop).delete()
+        Parameter.objects.filter(product_parameters__isnull=True).delete()
         for item in data['Products']:
             product_object, _ = Product.objects.get_or_create(name=item['name'],
                                                               category=Category.objects.get(name=item['category']))
@@ -62,4 +63,10 @@ class ShopPricelistUpdate(APIView):
                                                                      model=item['model'],
                                                                      price=item['price'],
                                                                      quantity=item['quantity'])
-        return JsonResponse({'Status': True, })
+            for name, value in item['parameters'].items():
+                parameter_object, _ = Parameter.objects.get_or_create(name=name)
+                ProductParameter.objects.create(product_in_shop=product_in_shop_object,
+                                                parameter=parameter_object,
+                                                value=value
+                                                )
+        return JsonResponse({'Status': True, 'Message': 'Pricelist updated'})
