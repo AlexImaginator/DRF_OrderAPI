@@ -1,0 +1,92 @@
+Categories:
+  - name: Smartphones
+  - name: Printers
+  - name: Cases
+  - name: Notebooks
+Products:
+  - name: Lenovo ThinkPad
+    category: Notebooks
+    model: LNV-1587
+    price: 54700.50
+    quantity: 3
+    parameters:
+      "Диагональ": 15.6"
+      "Разрешение": 1920x1080
+      "Процессор": AMD Ryzen 5
+      "RAM": 16Гб
+      "ROM": 1Тб
+      "Цвет": Белый
+  - name: Xiaomi Redmi Note 10
+    category: Smartphones
+    model: 8G/256G
+    price: 10340.50
+    quantity: 28
+    parameters:
+      "Диагональ": 6.5
+      "Разрешение": 1920x1080
+      "RAM": 8Гб
+      "ROM": 256Гб
+      "Цвет": Белый
+  - name: Xiaomi Redmi 9A
+    category: Smartphones
+    model: 4G/64G
+    price: 7600.50
+    quantity: 12
+    parameters:
+      "Диагональ": 5.8
+      "Разрешение": 1920x1080
+      "RAM": 4Гб
+      "ROM": 64Гб
+      "Цвет": Синий
+  - name: Xiaomi Redmi 10
+    category: Smartphones
+    model: 6G/128G
+    price: 9200.00
+    quantity: 115
+    parameters:
+      "Диагональ": 6.0
+      "Разрешение": 1920x1080
+      "RAM": 6Гб
+      "ROM": 128Гб
+      "Цвет": Черный
+  - name: Струйный принтер Epson
+    category: Printers
+    model: L3100
+    price: 31000.00
+    quantity: 15
+    parameters:
+      "Тип": Цветной
+      "Формат": A4
+  - name: Струйный принтер Epson
+    category: Printers
+    model: L3500
+    price: 34800.00
+    quantity: 8
+    parameters:
+      "Тип": Цветной
+      "Формат": A4
+      "WiFi": Да
+  - name: Чехол на Redmi Note 10
+    category: Cases
+    model: cs-105
+    price: 170.00
+    quantity: 14
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный
+  - name: Чехол на Redmi 9A
+    category: Cases
+    model: cs-102
+    price: 157.00
+    quantity: 69
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный
+  - name: Чехол на Redmi 10
+    category: Cases
+    model: cs-103
+    price: 127.00
+    quantity: 35
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный

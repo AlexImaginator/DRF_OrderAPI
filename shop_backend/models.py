@@ -100,3 +100,24 @@ class ProductParameter(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['product_in_shop', 'parameter'], name='unique_product_parameter')
         ]
+
+
+class BasketPosition(models.Model):
+    user = models.ForeignKey(User,
+                             verbose_name='Покупатель',
+                             on_delete=models.CASCADE,
+                             related_name='basket_positions'
+                             )
+    position = models.ForeignKey(ProductInShop,
+                                 on_delete=models.CASCADE,
+                                 related_name='basket_positions',
+                                 verbose_name='Позиция к заказу'
+                                 )
+    quantity = models.PositiveIntegerField(verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Позиция корзины для заказа'
+        verbose_name_plural = 'Список позиций корзины для заказа'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'position'], name='unique_basket_position')
+        ]

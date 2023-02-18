@@ -1,0 +1,79 @@
+Categories:
+  - name: Smartphones
+  - name: Printers
+  - name: Cases
+Products:
+  - name: Xiaomi Redmi Note 10
+    category: Smartphones
+    model: 8G/256G
+    price: 10500.50
+    quantity: 25
+    parameters:
+      "Диагональ": 6.5
+      "Разрешение": 1920x1080
+      "RAM": 8Гб
+      "ROM": 256Гб
+      "Цвет": Белый
+  - name: Xiaomi Redmi 9A
+    category: Smartphones
+    model: 4G/64G
+    price: 7300.50
+    quantity: 48
+    parameters:
+      "Диагональ": 5.8
+      "Разрешение": 1920x1080
+      "RAM": 4Гб
+      "ROM": 64Гб
+      "Цвет": Синий
+  - name: Xiaomi Redmi 10
+    category: Smartphones
+    model: 6G/128G
+    price: 9400.00
+    quantity: 10
+    parameters:
+      "Диагональ": 6.0
+      "Разрешение": 1920x1080
+      "RAM": 6Гб
+      "ROM": 128Гб
+      "Цвет": Черный
+  - name: Струйный принтер Epson
+    category: Printers
+    model: L3100
+    price: 30000.00
+    quantity: 8
+    parameters:
+      "Тип": Цветной
+      "Формат": A4
+  - name: Струйный принтер Epson
+    category: Printers
+    model: L3500
+    price: 36000.00
+    quantity: 4
+    parameters:
+      "Тип": Цветной
+      "Формат": A4
+      "WiFi": Да
+  - name: Чехол на Redmi Note 10
+    category: Cases
+    model: cs-105
+    price: 168.00
+    quantity: 15
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный
+  - name: Чехол на Redmi 9A
+    category: Cases
+    model: cs-102
+    price: 137.00
+    quantity: 20
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный
+  - name: Чехол на Redmi 10
+    category: Cases
+    model: cs-103
+    price: 147.00
+    quantity: 20
+    parameters:
+      "Материал": Силикон
+      "Цвет": Прозрачный
