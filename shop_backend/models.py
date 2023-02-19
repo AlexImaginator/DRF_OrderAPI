@@ -1,7 +1,18 @@
 from django.db import models
-from users.models import User
+from users.models import User, Contact
 from django.core.validators import MinValueValidator
 from _decimal import Decimal
+
+
+STATE_CHOICES = (
+    ('new', 'Новый'),
+    ('confirmed', 'Подтвержден'),
+    ('assembled', 'Собран'),
+    ('sent', 'Отправлен'),
+    ('delivered', 'Доставлен'),
+    ('canceled', 'Отменен'),
+
+)
 
 
 class Parameter(models.Model):
@@ -120,4 +131,41 @@ class BasketPosition(models.Model):
         verbose_name_plural = 'Список позиций корзины для заказа'
         constraints = [
             models.UniqueConstraint(fields=['user', 'position'], name='unique_basket_position')
+        ]
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User,
+                             verbose_name='Покупатель',
+                             on_delete=models.CASCADE,
+                             related_name='orders'
+                             )
+    created_at = models.DateTimeField(auto_now_add=True)
+    state = models.CharField(max_length=20, verbose_name='Статус', choices=STATE_CHOICES)
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Контакт')
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Список заказов'
+        ordering = ('-created_at', )
+
+
+class OrderPosition(models.Model):
+    order = models.ForeignKey(Order,
+                             verbose_name='Заказ',
+                             on_delete=models.CASCADE,
+                             related_name='order_positions'
+                             )
+    position = models.ForeignKey(ProductInShop,
+                                 on_delete=models.CASCADE,
+                                 related_name='order_positions',
+                                 verbose_name='Позиция заказа'
+                                 )
+    quantity = models.PositiveIntegerField(verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Позиция заказа'
+        verbose_name_plural = 'Список позиций заказа'
+        constraints = [
+            models.UniqueConstraint(fields=['order', 'position'], name='unique_order_position')
         ]

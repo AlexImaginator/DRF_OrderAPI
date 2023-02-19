@@ -1,5 +1,6 @@
 from rest_framework.routers import DefaultRouter
-from .views import ShopViewSet, ShopPricelistUpdate, CategoryView, ShopsListView, ProductInShopView, BasketView
+from .views import ShopViewSet, ShopPricelistUpdate, CategoryView, ShopsListView, ProductInShopView, BasketView, \
+    OrderView
 from django.urls import path
 
 
@@ -10,5 +11,6 @@ urlpatterns = [
     path('categories/', CategoryView.as_view()),
     path('shops/', ShopsListView.as_view()),
     path('products/', ProductInShopView.as_view()),
-    path('basket/', BasketView.as_view())
+    path('basket/', BasketView.as_view()),
+    path('orders/', OrderView.as_view())
               ] + router_shops.urls

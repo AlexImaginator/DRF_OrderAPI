@@ -1,18 +1,21 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
-from .models import Shop, Category, ProductInShop, Product, Parameter, ProductParameter, BasketPosition
+from .models import Shop, Category, ProductInShop, Product, Parameter, ProductParameter, BasketPosition, \
+    Order, OrderPosition
 from .serializers import ShopSerializer, ShopListSerializer, CategorySerializer, ProductInShopSerializer, \
-    BasketPositionSerializer
+    BasketPositionSerializer, OrderSerializer, OrderPositionSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.permissions import IsOwnerOrReadOnly
+from users.models import Contact
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
 from django.http import JsonResponse
-from django.db.models import Q
+from django.db.models import Q, F
 from requests import get as get_data
 from yaml import load as load_yaml, Loader
-from django.core.exceptions import ObjectDoesNotExist
+from collections import OrderedDict
+from _decimal import Decimal
 
 
 class ShopViewSet(ModelViewSet):
@@ -143,12 +146,91 @@ class BasketView(APIView):
             return JsonResponse({'Status': False, 'Error': 'Log in is required'}, status=403)
         if request.user.type != 'buyer':
             return JsonResponse({'Status': False, 'Error': 'Only for buyers'}, status=403)
-        queryset = BasketPosition.objects.filter(user=self.request.user)
+        queryset = BasketPosition.objects.filter(
+            user=self.request.user
+            ).select_related(
+            'user', 'position__shop', 'position__product'
+            ).annotate(cost=F('quantity')*F('position__price'))
         serializer = BasketPositionSerializer(queryset, many=True)
-        return Response(serializer.data)
+        data_to_response = serializer.data
+        total_sum = 0
+        for item in data_to_response:
+            total_sum += Decimal(item['cost'])
+        basket_total_sum = [OrderedDict([('basket_total_sum', total_sum)])]
+        data_to_response += basket_total_sum
+        return Response(data_to_response)
 
     def patch(self, request):
-        pass
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in is required'}, status=403)
+        if request.user.type != 'buyer':
+            return JsonResponse({'Status': False, 'Error': 'Only for buyers'}, status=403)
+        unsearched_positions = []
+        for item in self.request.data:
+            try:
+                basket_position = BasketPosition.objects.get(id=item['position'])
+                product_in_shop_obj = ProductInShop.objects.get(id=basket_position.position.id)
+                quantity_available = product_in_shop_obj.quantity
+                if item['quantity'] <= quantity_available:
+                    basket_position.quantity = item['quantity']
+                    basket_position.save()
+                else:
+                    error_msg = f'{item["position"]} position {quantity_available} is available'
+                    unsearched_positions.append(error_msg)
+            except:
+                error_msg = f'No {item["position"]} position in your basket'
+                unsearched_positions.append(error_msg)
+        return JsonResponse({'Status': True,
+                             'Message': 'Complete',
+                             'Errors': unsearched_positions})
 
     def delete(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in is required'}, status=403)
+        if request.user.type != 'buyer':
+            return JsonResponse({'Status': False, 'Error': 'Only for buyers'}, status=403)
+        unsearched_positions = []
+        for item in self.request.data:
+            try:
+                basket_position = BasketPosition.objects.get(id=item['position'])
+                basket_position.delete()
+            except:
+                error_msg = f'No {item["position"]} position in your basket'
+                unsearched_positions.append(error_msg)
+        return JsonResponse({'Status': True,
+                                 'Message': 'Complete',
+                                 'Errors': unsearched_positions})
+
+
+class OrderView(APIView):
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'Status': False, 'Error': 'Log in is required'}, status=403)
+        if request.user.type != 'buyer':
+            return JsonResponse({'Status': False, 'Error': 'Only for buyers'}, status=403)
+        basket_queryset = BasketPosition.objects.filter(user=self.request.user).select_related('position')
+        if basket_queryset:
+            shop_list = []
+            for item in basket_queryset:
+                if item.position.shop.id not in shop_list:
+                    shop_list.append(item.position.shop.id)
+            contact_obj = Contact.objects.filter(user=self.request.user).first()
+            for shop in shop_list:
+                order_obj = Order(user=self.request.user,
+                                                 state='new',
+                                                 contact=contact_obj)
+                for basket_position in basket_queryset:
+                    if basket_position.position.shop.id == shop:
+                        order_position_obj = OrderPosition(order=order_obj,
+                                                           position=basket_position.position,
+                                                           quantity=basket_position.quantity
+                                                           )
+        return JsonResponse({'Status': True, 'Message': 'In development'})
+
+
+    def get(self, request):
+        pass
+
+    def patch(self, request):
         pass

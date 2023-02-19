@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Shop, Category, Product, ProductInShop, ProductParameter, BasketPosition
+from .models import Shop, Category, Product, ProductInShop, ProductParameter, BasketPosition, Order, OrderPosition
+from users.serializers import ContactSerializer
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -67,8 +68,29 @@ class PositionSerializer(serializers.ModelSerializer):
 class BasketPositionSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     position = PositionSerializer(read_only=True)
+    cost = serializers.DecimalField(max_digits=11, decimal_places=2)
 
     class Meta:
         model = BasketPosition
-        fields = ['id', 'user', 'position', 'quantity']
+        fields = ['id', 'user', 'position', 'quantity', 'cost']
+        read_only_fields = ('id', )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    contact = ContactSerializer(read_only=True, many=True)
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'created_at', 'state', 'contact']
+        read_only_fields = ('id',)
+
+
+class OrderPositionSerializer(serializers.ModelSerializer):
+    order = OrderSerializer(read_only=True)
+    position = PositionSerializer(read_only=True)
+    cost = serializers.DecimalField(max_digits=11, decimal_places=2)
+
+    class Meta:
+        model = BasketPosition
+        fields = ['id', 'order', 'position', 'quantity', 'cost']
         read_only_fields = ('id', )
